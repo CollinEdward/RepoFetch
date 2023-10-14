@@ -27,7 +27,7 @@ def run_setup_scripts(directory, repo_name):
             try:
                 subprocess.run(["chmod", "+x", setup_script], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 subprocess.run([setup_script], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                display_message(f"{script} completed successfully for {repo_name}.", Fore.GREEN)
+                display_message(f"{script} completed successfully for {repo_name}." , Fore.GREEN)
             except subprocess.CalledProcessError as e:
                 display_message(f"Error running {script} for {repo_name}. {e.stderr}", Fore.RED)
 
