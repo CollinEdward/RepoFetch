@@ -1,9 +1,9 @@
 import os
 import subprocess
-import sys
 import logging
-from colorama import Fore, Back, Style, init
-from inquirer import List, prompt
+from colorama import Fore, Style, init
+from inquirer import Checkbox, prompt
+
 
 # Initialize colorama
 init()
@@ -75,27 +75,46 @@ def install_requirements(directory, repo_name):
             return True
     return False
 
+# Interactive interface for selecting repositories
+def select_repositories(repos):
+    questions = [Checkbox('selected_repos', message='Select repositories to clone and set up', choices=repos)]
+    answers = prompt(questions)
+    return answers['selected_repos']
+
+# User input validation
+def validate_input():
+    if not repositories:
+        display_message("No repositories are available for cloning.", RED)
+        exit(1)
+
 # Clone the repositories
-for repo in repositories:
-    repo_name = repo.split("/")[-1].replace(".git", "")
-    clone_dir = os.path.join(base_directory, repo_name)
+def main():
+    validate_input()
+    selected_repositories = select_repositories(repositories)
 
-    if not os.path.exists(clone_dir):
-        display_message(f"Cloning {repo_name}...", GREEN)
-        result = subprocess.run(["git", "clone", repo, clone_dir], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        if result.returncode == 0:
-            display_message(f"Cloning completed successfully for {repo_name}.", GREEN)
+    for repo in selected_repositories:
+        repo_name = repo.split("/")[-1].replace(".git", "")
+        clone_dir = os.path.join(base_directory, repo_name)
+
+        if not os.path.exists(clone_dir):
+            display_message(f"Cloning {repo_name}...", GREEN)
+            result = subprocess.run(["git", "clone", repo, clone_dir], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            if result.returncode == 0:
+                display_message(f"Cloning completed successfully for {repo_name}.", GREEN)
+            else:
+                display_message(f"Error cloning {repo_name}.", RED)
         else:
-            display_message(f"Error cloning {repo_name}.", RED)
-    else:
-        display_message(f"{repo_name} is already cloned.", GREEN)
+            display_message(f"{repo_name} is already cloned.", GREEN)
 
-    # Check and run setup scripts
-    if not run_setup_script(clone_dir, repo_name):
-        display_message(f"No setup scripts found for {repo_name}.", GREEN)
+        # Check and run setup scripts
+        if not run_setup_script(clone_dir, repo_name):
+            display_message(f"No setup scripts found for {repo_name}.", GREEN)
 
-    # Check and install requirements
-    if not install_requirements(clone_dir, repo_name):
-        display_message(f"No requirements found for {repo_name}.", GREEN)
+        # Check and install requirements
+        if not install_requirements(clone_dir, repo_name):
+            display_message(f"No requirements found for {repo_name}.", GREEN)
 
-display_message("All repositories cloned and setup completed.", GREEN)
+    display_message("All selected repositories cloned and setup completed.", GREEN)
+
+if __name__ == "__main__":
+    main()
