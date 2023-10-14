@@ -1,9 +1,17 @@
-# Repository Fetch and Setup Script
+<p align="center">
+  <img src="https://github.com/CollinEdward/RepoFetch/raw/main/repo_fetch_logo.png" alt="RepoFetch Logo" width="200">
+</p>
 
-This Python script is designed to simplify the process of cloning GitHub repositories and setting up various tools, frameworks, and applications from these repositories for cybersecurity and reconnaissance purposes.
+<h1 align="center">RepoFetch</h1>
 
-![GitHub repo size](https://img.shields.io/github/repo-size/CollinEdward/RepoFetch)
-![GitHub license](https://img.shields.io/github/license/CollinEdward/RepoFetch)
+<p align="center">
+  <a href="https://github.com/CollinEdward/RepoFetch">
+    <img src="https://img.shields.io/github/repo-size/CollinEdward/RepoFetch" alt="GitHub repo size">
+  </a>
+  <a href="https://github.com/CollinEdward/RepoFetch">
+    <img src="https://img.shields.io/github/license/CollinEdward/RepoFetch" alt="GitHub license">
+  </a>
+</p>
 
 ## Features
 
@@ -57,6 +65,10 @@ This Python script is designed to simplify the process of cloning GitHub reposit
 4. The script logs all actions and results in a file named "github_tool_automation.log" for your reference.
 
 5. After the process is completed, you will receive a summary of the status of the selected repositories.
+
+## Repository Graph
+
+![Repository Graph](https://github.com/CollinEdward/RepoFetch/raw/main/repo_fetch_graph.png)
 
 ## Contributing
 
