@@ -1,9 +1,15 @@
 import os
 import subprocess
+import sys
+import logging
 from colorama import Fore, Back, Style, init
+from inquirer import List, prompt
 
 # Initialize colorama
 init()
+
+# Initialize logging
+logging.basicConfig(filename='github_tool_automation.log', level=logging.INFO)
 
 # List of GitHub repository URLs
 repositories = [
@@ -13,6 +19,7 @@ repositories = [
     "https://github.com/FortyNorthSecurity/EyeWitness.git",
     "https://github.com/1N3/Sn1per.git",
     "https://github.com/projectdiscovery/subfinder.git",
+    "https://github.com/m4ll0k/infoga.git",
     "https://github.com/michenriksen/aquatone.git",
     "https://github.com/smicallef/spiderfoot.git",
     "https://github.com/lanmaster53/recon-ng.git",
@@ -26,11 +33,13 @@ os.makedirs(base_directory, exist_ok=True)
 
 # Color constants
 GREEN = Fore.GREEN
+RED = Fore.RED
 RESET = Style.RESET_ALL
 
 # Function to display colored messages
 def display_message(message, color):
     print(f"{color}{message}{RESET}")
+    logging.info(message)
 
 # Function to check for and execute setup scripts
 def run_setup_script(directory, repo_name):
@@ -39,8 +48,15 @@ def run_setup_script(directory, repo_name):
         setup_script = os.path.join(directory, script)
         if os.path.exists(setup_script):
             display_message(f"Running {script} for {repo_name}...", GREEN)
-            subprocess.run(["chmod", "+x", setup_script])
-            subprocess.run([setup_script])
+            result = subprocess.run(["chmod", "+x", setup_script], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            if result.returncode == 0:
+                result = subprocess.run([setup_script], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                if result.returncode == 0:
+                    display_message(f"{script} completed successfully for {repo_name}.", GREEN)
+                else:
+                    display_message(f"Error running {script} for {repo_name}.", RED)
+            else:
+                display_message(f"Error setting execute permissions for {script} in {repo_name}.", RED)
             return True
     return False
 
@@ -51,7 +67,11 @@ def install_requirements(directory, repo_name):
         requirements_file = os.path.join(directory, req_file)
         if os.path.exists(requirements_file):
             display_message(f"Installing requirements for {repo_name}...", GREEN)
-            subprocess.run(["pip", "install", "-r", requirements_file])
+            result = subprocess.run(["pip", "install", "-r", requirements_file], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            if result.returncode == 0:
+                display_message(f"Requirements installed successfully for {repo_name}.", GREEN)
+            else:
+                display_message(f"Error installing requirements for {repo_name}.", RED)
             return True
     return False
 
@@ -62,7 +82,11 @@ for repo in repositories:
 
     if not os.path.exists(clone_dir):
         display_message(f"Cloning {repo_name}...", GREEN)
-        subprocess.run(["git", "clone", repo, clone_dir])
+        result = subprocess.run(["git", "clone", repo, clone_dir], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        if result.returncode == 0:
+            display_message(f"Cloning completed successfully for {repo_name}.", GREEN)
+        else:
+            display_message(f"Error cloning {repo_name}.", RED)
     else:
         display_message(f"{repo_name} is already cloned.", GREEN)
 
@@ -74,4 +98,4 @@ for repo in repositories:
     if not install_requirements(clone_dir, repo_name):
         display_message(f"No requirements found for {repo_name}.", GREEN)
 
-display_message("All repositories cloned and setup completed successfully.", GREEN)
+display_message("All repositories cloned and setup completed.", GREEN)
