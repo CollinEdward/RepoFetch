@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/CollinEdward/RepoFetch/raw/main/RepoFetchLogo.png" alt="RepoFetch Logo" width="200">
+  <img src="https://github.com/CollinEdward/RepoFetch/raw/main/RepoFetchLogo.png" alt="RepoFetch Logo" width="600">
 </p>
 
 <h1 align="center">RepoFetch</h1>
