@@ -2,6 +2,7 @@ import os
 import subprocess
 import logging
 import argparse
+import json
 from colorama import Fore, Style, init
 from inquirer import Checkbox, prompt
 from concurrent.futures import ThreadPoolExecutor
@@ -27,7 +28,7 @@ def run_setup_scripts(directory, repo_name):
             try:
                 subprocess.run(["chmod", "+x", setup_script], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 subprocess.run([setup_script], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                display_message(f"{script} completed successfully for {repo_name}." , Fore.GREEN)
+                display_message(f"{script} completed successfully for {repo_name}.", Fore.GREEN)
             except subprocess.CalledProcessError as e:
                 display_message(f"Error running {script} for {repo_name}. {e.stderr}", Fore.RED)
 
@@ -77,31 +78,40 @@ def main():
     parser = argparse.ArgumentParser(description='Automate GitHub repository setup')
     parser.add_argument('--base-directory', default='tools', help='Base directory for cloning repositories')
     parser.add_argument('--log-file', default='github_tool_automation.log', help='Log file path')
-    parser.add_argument('--repositories', nargs='+', help='List of repository URLs')
+    parser.add_argument('--repositories', help='Path to a JSON file with repository URLs')
 
     args = parser.parse_args()
 
+    # Setup logging
     logging.basicConfig(filename=args.log_file, level=logging.INFO)
 
-    repositories = args.repositories if args.repositories else [
-        "https://github.com/OWASP/Amass.git",
-        "https://github.com/zaproxy/zaproxy.git",
-        "https://github.com/aboul3la/Sublist3r.git",
-        "https://github.com/FortyNorthSecurity/EyeWitness.git",
-        "https://github.com/1N3/Sn1per.git",
-        "https://github.com/projectdiscovery/subfinder.git",
-        "https://github.com/m4ll0k/infoga.git",
-        "https://github.com/michenriksen/aquatone.git",
-        "https://github.com/smicallef/spiderfoot.git",
-        "https://github.com/lanmaster53/recon-ng.git"
-    ]
+    # Load repositories from a JSON file or use default repositories
+    if args.repositories:
+        with open(args.repositories, 'r') as file:
+            repositories = json.load(file)
+    else:
+        repositories = [
+            "https://github.com/OWASP/Amass.git",
+            "https://github.com/zaproxy/zaproxy.git",
+            "https://github.com/aboul3la/Sublist3r.git",
+            "https://github.com/FortyNorthSecurity/EyeWitness.git",
+            "https://github.com/1N3/Sn1per.git",
+            "https://github.com/projectdiscovery/subfinder.git",
+            "https://github.com/m4ll0k/infoga.git",
+            "https://github.com/michenriksen/aquatone.git",
+            "https://github.com/smicallef/spiderfoot.git",
+            "https://github.com/lanmaster53/recon-ng.git"
+        ]
 
     validate_input(repositories)
     selected_repositories = select_repositories(repositories)
 
     os.makedirs(args.base_directory, exist_ok=True)
 
-    with ThreadPoolExecutor(max_workers=4) as executor:
+    # Determine the number of workers based on the CPU count
+    max_workers = os.cpu_count() or 4
+
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
         executor.map(clone_and_setup, selected_repositories, [args.base_directory] * len(selected_repositories))
 
     display_message("All selected repositories cloned and setup completed.", Fore.GREEN)
