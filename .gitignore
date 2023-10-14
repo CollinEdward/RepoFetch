@@ -1,0 +1,8 @@
+# Ignore the log file
+github_tool_automation.log
+
+# Ignore the 'tools' directory
+/tools
+
+# Ignore the 'myenv' directory
+/myenv
