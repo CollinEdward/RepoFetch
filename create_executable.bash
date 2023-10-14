@@ -1,11 +1,16 @@
 #!/bin/bash
 
-# Define the script name and output directory
+# Define the script name, output directory, and PyInstaller command
 script_name="main.py"
 output_dir="dist"
+pyinstaller_cmd="pyinstaller"
 
-# Full path to the pyinstaller command
-pyinstaller_cmd="/home/redhat/.local/bin/pyinstaller"
+# Check if PyInstaller is available
+if ! command -v $pyinstaller_cmd &> /dev/null; then
+    echo "Error: PyInstaller is not installed or not in the system's PATH."
+    echo "Please install PyInstaller or ensure it's available in your PATH."
+    exit 1
+fi
 
 # Run PyInstaller
 $pyinstaller_cmd --name=RepoFetch --onefile $script_name
