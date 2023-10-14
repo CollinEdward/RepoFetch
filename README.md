@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/CollinEdward/RepoFetch/raw/main/repo_fetch_logo.png" alt="RepoFetch Logo" width="200">
+  <img src="https://github.com/CollinEdward/RepoFetch/raw/main/RepoFetchLogo.png" alt="RepoFetch Logo" width="200">
 </p>
 
 <h1 align="center">RepoFetch</h1>
@@ -65,10 +65,6 @@
 4. The script logs all actions and results in a file named "github_tool_automation.log" for your reference.
 
 5. After the process is completed, you will receive a summary of the status of the selected repositories.
-
-## Repository Graph
-
-![Repository Graph](https://github.com/CollinEdward/RepoFetch/raw/main/repo_fetch_graph.png)
 
 ## Contributing
 
